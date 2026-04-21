@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Inventory App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f8;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        width: 70%;
+        margin: 40px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      input {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        flex: 1;
+      }
+
+      button {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: white;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px;
+      }
+
+      td {
+        padding: 10px;
+        text-align: center;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      .delete-btn {
+        background-color: #e74c3c;
+      }
+
+      .delete-btn:hover {
+        background-color: #c0392b;
+      }
+      td button {
+        margin: 2px;
+      }
+      a {
+        text-decoration: none;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+
+    <script>
+      function confirmDelete(id) {
+        if (confirm("Yakin mau hapus item ini?")) {
+          window.location.href = "/delete/" + id;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📦 Inventory Management</h1>
+
+      <form action="/add" method="POST">
+        <input type="text" name="name" placeholder="Item Name" required />
+        <input type="number" name="stock" placeholder="Stock" required />
+        <button type="submit">Add</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Stock</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.nama }}</td>
+            <td>{{ item.jumlah }}</td>
+            <td>
+              <a
+                href="/edit/{{ item.id }}"
+                style="
+                  background-color: #3498db;
+                  color: white;
+                  padding: 6px 12px;
+                  border-radius: 5px;
+                  text-decoration: none;
+                  display: inline-block;
+                  font-size: 14px;
+                "
+              >
+                Edit
+              </a>
+
+              <button
+                class="delete-btn"
+                onclick="confirmDelete({{ item.id }})"
+                style="padding: 6px 12px; font-size: 14px; margin-left: 5px"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
