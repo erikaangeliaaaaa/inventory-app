@@ -1,24 +1,47 @@
-from models.item import Item, db
+from models.item import db, Item
 
 class InventoryService:
-    # Kita tidak butuh __init__ lagi karena data disimpan di Database
-    
     @staticmethod
     def add_item(name, stock):
-        if not name:
+        # 1. Validasi Nama (Menangani spasi kosong)
+        if not name or not name.strip():
             raise ValueError("Name cannot be empty")
+        
+        # 2. Konversi & Validasi Stok
+        try:
+            stock = int(stock)
+        except (ValueError, TypeError):
+            raise ValueError("Stock must be a number")
+            
         if stock < 0:
             raise ValueError("Stock cannot be negative")
-
-        item = Item(nama=name, jumlah=stock)
+            
+        item = Item(nama=name.strip(), jumlah=stock)
         db.session.add(item)
         db.session.commit()
         return item
 
     @staticmethod
-    def get_all_items():
-        # Tanpa 'self', langsung query ke database
-        return Item.query.all()
+    def update_item(item_id, name, stock):
+        item = Item.query.get(item_id)
+        if not item:
+            raise ValueError("Item not found")
+            
+        if not name or not name.strip():
+            raise ValueError("Name cannot be empty")
+            
+        try:
+            stock = int(stock)
+        except (ValueError, TypeError):
+            raise ValueError("Stock must be a number")
+            
+        if stock < 0:
+            raise ValueError("Stock cannot be negative")
+            
+        item.nama = name.strip()
+        item.jumlah = stock
+        db.session.commit()
+        return item
 
     @staticmethod
     def delete_item(item_id):
@@ -30,16 +53,10 @@ class InventoryService:
         return False
 
     @staticmethod
-    def update_item(item_id, name, stock):
-        if not name:
-            raise ValueError("Name cannot be empty")
-        if stock < 0:
-            raise ValueError("Stock cannot be negative")
+    def get_all_items():
+        return Item.query.all()
 
-        item = Item.query.get(item_id)
-        if item:
-            item.nama = name
-            item.jumlah = stock
-            db.session.commit()
-            return item
-        raise ValueError("Item not found")
+    # Tambahkan fungsi ini agar test_get_item_by_id tidak error
+    @staticmethod
+    def get_item_by_id(item_id):
+        return Item.query.get(item_id)
