@@ -18,12 +18,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install and Run Tests
+        env:
+          DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/inventory_db
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
-
-      - name: Run tests
-        run: |
-          pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
+          # Instal library utama satu per satu agar pasti terinstal
+          python -m pip install flask flask-sqlalchemy pymysql pytest pytest-cov
+          # Jika ada library lain di requirements.txt, instal juga
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          # Jalankan test
+          python -m pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
