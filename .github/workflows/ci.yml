@@ -2,23 +2,12 @@ name: Inventory CI
 
 on: [push, pull_request]
 
-# Pindahkan variabel ke tingkat 'env' global agar menyentuh semua actions
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: inventory_db
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout Code
@@ -29,11 +18,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install and Run Tests
-        env:
-          DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/inventory_db
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m pip install pytest pytest-cov
-          python -m pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
