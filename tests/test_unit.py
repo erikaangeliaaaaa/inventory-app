@@ -1,14 +1,14 @@
 import pytest
 from app import app, db
-from services.inventory_service import InventoryService
-from models.item import Item
 
 @pytest.fixture
 def setup_db():
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
     with app.app_context():
+        from models.item import Item  # 🔥 WAJIB IMPORT MODEL
         db.create_all()
         yield db
         db.session.remove()

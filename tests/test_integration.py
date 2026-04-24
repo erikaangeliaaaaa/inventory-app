@@ -9,8 +9,8 @@ def client():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     with app.test_client() as client:
         with app.app_context():
+            from models.item import Item  # 🔥 WAJIB
             db.create_all()
-            yield client
 
 # --- INTEGRATION TESTS (5 CASES) ---
 
