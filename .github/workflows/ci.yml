@@ -6,7 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Menyiapkan database MySQL di environment GitHub Actions
     services:
       mysql:
         image: mysql:8.0
@@ -19,26 +18,19 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 # Diperbarui dari v3 ke v4
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5 # Diperbarui dari v4 ke v5
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install Dependencies and Run Tests
+      - name: Install and Run Tests
         env:
-        DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/inventory_db
-        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+          DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/inventory_db
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: |
-        # 1. Pastikan pip versi terbaru
           python -m pip install --upgrade pip
-        
-        # 2. Instal library dari requirements.txt
           python -m pip install -r requirements.txt
-        
-        # 3. Instal pytest secara eksplisit (untuk memastikan ada di path)
           python -m pip install pytest pytest-cov
-        
-        # 4. Jalankan pengujian
           python -m pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
