@@ -1,5 +1,7 @@
 import pytest
+from models.item import Item
 from app import app, db
+from services.inventory_service import InventoryService
 
 @pytest.fixture
 def setup_db():
@@ -7,8 +9,9 @@ def setup_db():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    from models.item import Item   # 🔥 WAJIB ADA
+
     with app.app_context():
-        from models.item import Item  # 🔥 WAJIB IMPORT MODEL
         db.create_all()
         yield db
         db.session.remove()
@@ -60,7 +63,10 @@ def test_delete_item_not_found(setup_db):
 def test_delete_item_and_verify(setup_db):
     item = InventoryService.add_item("Verify", 1)
     InventoryService.delete_item(item.id)
-    found = Item.query.get(item.id)
+
+    with app.app_context():
+        found = Item.query.get(item.id)
+
     assert found is None
 
 # 10-12. Validation & Edge Cases

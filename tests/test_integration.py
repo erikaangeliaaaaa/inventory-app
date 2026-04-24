@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
 from app import app, db
 from models.item import Item
@@ -7,10 +12,17 @@ def client():
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    with app.test_client() as client:
-        with app.app_context():
-            from models.item import Item  # 🔥 WAJIB
-            db.create_all()
+
+    from models.item import Item  # penting
+
+    with app.app_context():
+        db.create_all()
+
+        with app.test_client() as client:
+            yield client
+
+        db.session.remove()
+        db.drop_all()
 
 # --- INTEGRATION TESTS (5 CASES) ---
 
@@ -21,30 +33,40 @@ def test_index_route(client):
     assert b"Inventory Management" in response.data
 
 def test_add_item_integration(client):
-    """Test 2: Memastikan data yang di-post masuk ke database"""
     client.post('/add', data={'name': 'Buku', 'stock': '20'})
-    item = Item.query.filter_by(nama='Buku').first()
+
+    with app.app_context():
+        item = Item.query.filter_by(nama='Buku').first()
+
     assert item is not None
     assert item.jumlah == 20
 
 def test_delete_item_integration(client):
-    """Test 3: Memastikan item benar-benar terhapus"""
-    # Tambah dulu
-    item = Item(nama="Hapus Aku", jumlah=1)
-    db.session.add(item)
-    db.session.commit()
-    # Hapus
-    client.get(f'/delete/{item.id}')
-    deleted_item = Item.query.get(item.id)
+    with app.app_context():
+        item = Item(nama="Hapus Aku", jumlah=1)
+        db.session.add(item)
+        db.session.commit()
+        item_id = item.id
+
+    client.get(f'/delete/{item_id}')
+
+    with app.app_context():
+        deleted_item = Item.query.get(item_id)
+
     assert deleted_item is None
 
 def test_edit_item_integration(client):
-    """Test 4: Memastikan edit merubah data di DB"""
-    item = Item(nama="Lama", jumlah=5)
-    db.session.add(item)
-    db.session.commit()
-    client.post(f'/edit/{item.id}', data={'name': 'Baru', 'stock': '10'})
-    updated_item = Item.query.get(item.id)
+    with app.app_context():
+        item = Item(nama="Lama", jumlah=5)
+        db.session.add(item)
+        db.session.commit()
+        item_id = item.id
+
+    client.post(f'/edit/{item_id}', data={'name': 'Baru', 'stock': '10'})
+
+    with app.app_context():
+        updated_item = Item.query.get(item_id)
+
     assert updated_item.nama == "Baru"
 
 def test_full_flow_integration(client):
