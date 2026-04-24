@@ -1,4 +1,5 @@
-from models.item import db, Item
+from models.item import Item
+from app import db
 
 class InventoryService:
     @staticmethod
