@@ -5,9 +5,9 @@ from models.item import Item
 
 @pytest.fixture
 def setup_db():
-    """Fixture untuk menyiapkan database sementara di memori."""
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     with app.app_context():
         db.create_all()
         yield db

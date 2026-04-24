@@ -5,8 +5,8 @@ from models.item import Item
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
-    # Menggunakan SQLite memory agar testing tidak merusak database MySQL asli Anda
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     with app.test_client() as client:
         with app.app_context():
             db.create_all()
