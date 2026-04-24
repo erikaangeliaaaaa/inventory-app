@@ -50,6 +50,15 @@ def test_update_item_negative_stock(setup_db):
     with pytest.raises(ValueError, match="Stock cannot be negative"):
         InventoryService.update_item(item.id, "Test", -1)
 
+def test_update_item_not_found(setup_db):
+    with pytest.raises(ValueError, match="Item not found"):
+        InventoryService.update_item(999, "Test", 10)
+
+def test_update_item_invalid_stock(setup_db):
+    item = InventoryService.add_item("Test", 5)
+    with pytest.raises(ValueError):
+        InventoryService.update_item(item.id, "Test", "abc")
+
 # 7-9. Delete Item Cases
 def test_delete_item_success(setup_db):
     item = InventoryService.add_item("Hapus", 1)
