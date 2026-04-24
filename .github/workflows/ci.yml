@@ -18,12 +18,13 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Diperbarui dari v3 ke v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Diperbarui dari v4 ke v5
         with:
-          python-version: "3.12" # Mengikuti versi Python yang Anda gunakan
+          python-version: "3.12"
 
       - name: Install Dependencies
         run: |
@@ -33,6 +34,6 @@ jobs:
       - name: Run Tests with Coverage
         env:
           DATABASE_URL: mysql+pymysql://root:rootpassword@127.0.0.1:3306/inventory_db
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Memaksa penggunaan Node 24 agar warning hilang
         run: |
-          # Gunakan 'python -m pytest' untuk memastikan path terbaca
           python -m pytest tests/ --cov=services --cov=models --cov-report=term --cov-report=xml
