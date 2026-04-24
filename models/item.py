@@ -1,4 +1,4 @@
-from app import db
+from extensions import db   # 🔥 bukan dari app lagi
 
 class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
