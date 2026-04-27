@@ -5,6 +5,8 @@
 
 ## Deskripsi Aplikasi
 
+//tesss
+
 Aplikasi ini merupakan sistem manajemen inventori sederhana berbasis web yang dibuat menggunakan Flask dan SQLite. Aplikasi ini memungkinkan pengguna untuk menambahkan, mengedit, melihat, dan menghapus data barang.
 
 Aplikasi ini dikembangkan sebagai bagian dari tugas implementasi automated testing dan Continuous Integration (CI).
